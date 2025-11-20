@@ -1,13 +1,13 @@
 package view;
 import controller.TransactionController;
-import model.Transaction;
 import java.time.LocalDateTime;
 import java.util.Scanner;
+import model.Transaction;
 
 
 public class ConsoleView {
     private TransactionController controller = new TransactionController();
-    private Scanner sc = new sc(System.in);
+    private Scanner sc = new Scanner(System.in);
 
     public void start() {
         while (true) {
