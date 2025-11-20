@@ -1,17 +1,52 @@
+package model;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+
 public class Transaction {
     private int id;
-    private LocalDate date;
     private double amount;
     private String category;
-    private String note;
+    private String description;
+    private LocalDateTime dateTime;
 
-    public Transaction(int id, LocalDate date, double amount, String category, String note){
+    public Transaction(int id, LocalDateTime dateTime,
+     double amount, String category, String description){
 
         this.id = id;
-        this.date = date;
         this.amount = amount;
         this.category = category;
-        this.note = note;
+        this.description = description;
+        this.dateTime = dateTime;
 
     }
+
+    public int getId(){
+    return id;
+    }
+
+    public LocalDateTime getDateTime(){
+    return dateTime;
+    }
+
+    public double getAmount(){
+    return amount;
+    }
+
+    public String getCategory(){
+    return category;
+    }
+
+    public String getdescription(){
+    return description;
+    }
+
+
+    public String getFormattedDateTime(){
+        DateTimeFormatter f = DateTimeFormatter.ofPattern("HH:mm:ss | dd/MM/yyyy");
+        
+        return dateTime.format(f);
+    
+    }
 }
+
+ 
