@@ -20,6 +20,8 @@ public class Transaction {
 
     }
 
+
+
     public int getId(){
     return id;
     }
@@ -36,7 +38,7 @@ public class Transaction {
     return category;
     }
 
-    public String getdescription(){
+    public String getDescription(){
     return description;
     }
 
@@ -46,6 +48,19 @@ public class Transaction {
         
         return dateTime.format(f);
     
+    }
+
+    public void setDateTime(LocalDateTime dateTime){
+        this.dateTime = dateTime;
+    }
+    public void setAmount(double amount){
+        this.amount = amount;
+    }
+    public void setCategory(String category){
+        this.category = category;
+    }
+    public void setDescription(String description){
+        this.description = description;
     }
 }
 

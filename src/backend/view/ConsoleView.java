@@ -50,7 +50,7 @@ public class ConsoleView {
     private void showTransactions() {
         for (Transaction t : controller.getAllTransactions()) {
             System.out.println(t.getId() + " | " + t.getDateTime() + " | " + t.getAmount() 
-                               + " | " + t.getCategory() + " | " + t.getdescription());
+                               + " | " + t.getCategory() + " | " + t.getDescription());
         }
     }
 
