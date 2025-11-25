@@ -1,4 +1,5 @@
 package model;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
@@ -8,6 +9,17 @@ public class Transaction {
     private String category;
     private String description;
     private LocalDateTime dateTime;
+    private LocalDate date;
+
+    @Override
+    public String toString(){
+        return String.format("ID: %d | %s | %.2f | %s | %s",
+                             id,
+                             getFormattedDateTime(),  // formatted date/time
+                             amount,
+                             category,
+                             description);
+    }
 
     public Transaction(int id, LocalDateTime dateTime,
      double amount, String category, String description){
@@ -28,6 +40,10 @@ public class Transaction {
 
     public LocalDateTime getDateTime(){
     return dateTime;
+    }
+
+    public LocalDate getDate(){
+        return date;
     }
 
     public double getAmount(){

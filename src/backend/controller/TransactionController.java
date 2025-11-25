@@ -4,6 +4,7 @@ import java.io.BufferedWriter;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
 import model.Transaction;
@@ -39,7 +40,7 @@ public class TransactionController {
         return false;
     }
 
-    public boolean updateTransaction(int id, LocalDateTime newDateTime, double newAmount, String newCategory, String newDescription){
+    public boolean updateTransaction(int id, double newAmount, String newCategory, String newDescription){
         
         Transaction t = findById(id);
 
@@ -47,7 +48,6 @@ public class TransactionController {
             return false;
         }
 
-        t.setDateTime(newDateTime);
         t.setAmount(newAmount);
         t.setCategory(newCategory);
         t.setDescription(newDescription);
@@ -125,6 +125,49 @@ public class TransactionController {
 
 
 
+    }
+
+
+    //Filters (In progress)
+
+    public List<Transaction> filterByCategory(String category){
+        return transactions.stream()
+                .filter(t -> t.getCategory().equalsIgnoreCase(category))
+                .toList();
+    }
+
+    public List<Transaction> filterByDateRange(LocalDate startD, LocalDate endD){
+        return transactions.stream()
+                .filter(t->{
+                LocalDate date = t.getDateTime().toLocalDate();
+                return !date.isBefore(startD) && !date.isAfter(endD);
+        }).toList();
+    }
+    
+    public List<Transaction> sortByDate(boolean ascending){
+        return transactions.stream().sorted(ascending
+            ? Comparator.comparing(Transaction::getDateTime)
+            : Comparator.comparing(Transaction::getDateTime).reversed())
+            .toList();
+        
+                        
+    }
+    
+    public List<Transaction> sortByAmount(boolean ascending){
+        return transactions.stream().sorted(ascending
+            ? Comparator.comparingDouble(Transaction::getAmount)
+            : Comparator.comparingDouble(Transaction::getAmount).reversed())
+            .toList();
+    }
+
+    
+    public List<Transaction> search(String keyword){
+        String kw = keyword.toLowerCase();
+        return transactions.stream().filter(t->
+            t.getDescription().toLowerCase().contains(kw) || 
+            t.getCategory().toLowerCase().contains(kw)
+        ).toList();
+        
     }
     
 }
