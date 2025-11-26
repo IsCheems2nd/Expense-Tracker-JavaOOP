@@ -1,12 +1,12 @@
 package view;
 
-import model.Transaction;
-import javax.swing.table.AbstractTableModel;
 import java.util.List;
+import javax.swing.table.AbstractTableModel;
+import model.Transaction;
 
 public class TransactionTableModel extends AbstractTableModel {
     private List<Transaction> transactions;
-    private final String[] cols = {"ID","DateTime","Amount","Category","Description"};
+    private final String[] cols = {"ID","Date","Amount","Category","Description"};
 
     public TransactionTableModel(List<Transaction> transactions) {
         this.transactions = transactions;

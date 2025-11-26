@@ -1,88 +1,131 @@
 package view;
 
 import controller.TransactionController;
-import model.Transaction;
-import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.List;
+import javax.swing.*;
+import model.Transaction;
 
-public class MainFrame extends JFrame {
-    private TransactionController controller;
-    private TransactionTableModel tableModel;
-    private JTable table;
+public class MainFrame extends BaseFrame implements ActionListener {
+    private TransactionTableModel mainTableModel;
 
     public MainFrame(TransactionController controller) {
-        super("Expense Tracker");
-        this.controller = controller;
-        tableModel = new TransactionTableModel(controller.getAllTransactions());
-        table = new JTable(tableModel);
-
-        setLayout(new BorderLayout());
-        add(new JScrollPane(table), BorderLayout.CENTER);
-
-        JPanel buttons = new JPanel();
-        JButton addBtn = new JButton("Add");
-        JButton editBtn = new JButton("Edit");
-        JButton delBtn = new JButton("Delete");
-        buttons.add(addBtn);
-        buttons.add(editBtn);
-        buttons.add(delBtn);
-        add(buttons, BorderLayout.SOUTH);
-
-        addBtn.addActionListener(e -> onAdd());
-        delBtn.addActionListener(e -> onDelete());
-        editBtn.addActionListener(e -> onEdit());
-
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(800, 500);
-        setLocationRelativeTo(null);
+        super("Expense Tracker", controller, 600, 800);
     }
 
-    private void onAdd() {
-        TransactionFormPanel form = new TransactionFormPanel(null);
-        int result = JOptionPane.showConfirmDialog(this, form, "Add Transaction",
-                JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
-        if (result == JOptionPane.OK_OPTION) {
-            Transaction t = form.toTransaction();
-            if (t != null) {
-                controller.addTransaction(t.getDateTime(), t.getAmount(), t.getCategory(), t.getDescription());
-                refresh();
-            }
+    @Override
+    protected void addGuiComponents() {
+        addWelcomeLabel();
+        addBalanceLabel();
+        addBalanceTextField();
+        addAddTransactionButton();
+        addBrowseHistoryButton();
+        addGenerateReportButton();
+        addMoneyFlowPanel();
+        addRecentTransactionsPanel();
+    }
+
+    private void addWelcomeLabel() {
+        String welcomeText = "<html><body style='text-align:center'><b>Expense Tracker</b><br>Manage your finances</body></html>";
+        JLabel welcomeLabel = UIComponentFactory.createLabel(welcomeText, 0, 20, getWidth() - 10, 50, 18, SwingConstants.CENTER);
+        add(welcomeLabel);
+    }
+
+    private void addBalanceLabel() {
+        JLabel balanceLabel = UIComponentFactory.createLabel("Current Balance", 0, 100, getWidth() - 10, 30, 18, SwingConstants.CENTER);
+        add(balanceLabel);
+    }
+
+    private void addBalanceTextField() {
+        double totalBalance = calculateBalance();
+        JTextField balanceTextField = UIComponentFactory.createTextField(
+                String.format("$%.2f", totalBalance),
+                20, 135, getWidth() - 50, 40, 24, true
+        );
+        balanceTextField.setHorizontalAlignment(SwingConstants.CENTER);
+        balanceTextField.setEditable(false);
+        add(balanceTextField);
+    }
+
+    private double calculateBalance() {
+        List<Transaction> transactions = controller.getAllTransactions();
+        double balance = 0;
+        for (Transaction t : transactions) {
+            balance += t.getAmount();
+        }
+        return balance;
+    }
+
+    private void addAddTransactionButton() {
+        int contentWidth = Math.min(getWidth() - 10, 500);
+        int btnX = (getWidth() - contentWidth) / 2;
+        JButton addBtn = UIComponentFactory.createButton("Add Transaction", btnX, 190, contentWidth, 40, 16);
+        addBtn.setActionCommand("Add Transaction");
+        addBtn.addActionListener(this);
+        add(addBtn);
+    }
+
+    private void addBrowseHistoryButton() {
+        int contentWidth = Math.min(getWidth() - 10, 500);
+        int btnX = (getWidth() - contentWidth) / 2;
+        JButton historyBtn = UIComponentFactory.createButton("Browse Transactions History", btnX, 240, contentWidth, 40, 16);
+        historyBtn.setActionCommand("Browse History");
+        historyBtn.addActionListener(this);
+        add(historyBtn);
+    }
+
+    private void addGenerateReportButton() {
+        int contentWidth = Math.min(getWidth() - 10, 500);
+        int btnX = (getWidth() - contentWidth) / 2;
+        JButton reportBtn = UIComponentFactory.createButton("Generate Report", btnX, 290, contentWidth, 40, 16);
+        reportBtn.setActionCommand("Generate Report");
+        reportBtn.addActionListener(this);
+        add(reportBtn);
+    }
+
+    private void addMoneyFlowPanel() {
+        int contentWidth = Math.min(getWidth() - 10, 500);
+        int panelX = (getWidth() - contentWidth) / 2;
+        JPanel moneyFlowPanel = new MoneyFlowPanel(controller);
+        moneyFlowPanel.setBounds(panelX, 340, contentWidth, 80);
+        add(moneyFlowPanel);
+    }
+
+    private void addRecentTransactionsPanel() {
+        int contentWidth = Math.min(getWidth() - 10, 500);
+        int labelX = (getWidth() - contentWidth) / 2;
+        JLabel recentLabel = UIComponentFactory.createLabel("Recent Transactions", labelX, 425, contentWidth, 25, 14, SwingConstants.LEFT);
+        add(recentLabel);
+
+        mainTableModel = new TransactionTableModel(controller.getAllTransactions());
+        JTable table = new JTable(mainTableModel);
+        table.setFont(new Font("Dialog", Font.PLAIN, 10));
+        JScrollPane scrollPane = new JScrollPane(table);
+        scrollPane.setBounds(labelX, 450, contentWidth, 100);
+        add(scrollPane);
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        String cmd = e.getActionCommand();
+        if (cmd.equals("Add Transaction")) {
+            dispose();
+            new AddExpenseFrame("Add Transaction", controller, 550, 700).setVisible(true);
+        } else if (cmd.equals("Browse History")) {
+            dispose();
+            new TransactionHistoryFrameWindow("Transaction History", controller, 600, 700).setVisible(true);
+        } else if (cmd.equals("Generate Report")) {
+            dispose();
+            new GenerateReportFrameWindow("Generate Report", controller, 600, 700).setVisible(true);
         }
     }
 
-    private void onDelete() {
-        int sel = table.getSelectedRow();
-        if (sel >= 0) {
-            int id = tableModel.getTransactionAt(sel).getId();
-            controller.deleteTransaction(id);
-            refresh();
-        } else {
-            JOptionPane.showMessageDialog(this, "Select a row first.");
-        }
-    }
-
-    private void onEdit() {
-        int sel = table.getSelectedRow();
-        if (sel >= 0) {
-            Transaction t = tableModel.getTransactionAt(sel);
-            TransactionFormPanel form = new TransactionFormPanel(t);
-            int result = JOptionPane.showConfirmDialog(this, form, "Edit Transaction",
-                    JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
-            if (result == JOptionPane.OK_OPTION) {
-                double amt = form.getAmount();
-                String cat = form.getCategory();
-                String desc = form.getDescription();
-                controller.updateTransaction(t.getId(), amt, cat, desc);
-                refresh();
-            }
-        } else {
-            JOptionPane.showMessageDialog(this, "Select a row first.");
-        }
-    }
-
-    public void refresh() {
-        List<Transaction> list = controller.getAllTransactions();
-        tableModel.setTransactions(list);
+    public void refreshBalance() {
+        removeAll();
+        addGuiComponents();
+        revalidate();
+        repaint();
     }
 }
