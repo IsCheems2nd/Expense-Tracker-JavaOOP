@@ -1,8 +1,9 @@
-package view;
-import controller.TransactionController;
+package backend.view;
 import java.time.LocalDateTime;
 import java.util.Scanner;
-import model.Transaction;
+
+import backend.controller.TransactionController;
+import backend.model.Transaction;
 
 
 public class ConsoleView {

@@ -1,4 +1,4 @@
-package controller;
+package backend.controller;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.FileReader;
@@ -6,14 +6,18 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.*;
-import model.Transaction;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import backend.model.Transaction;
 
 public class TransactionController {
     private List<Transaction> transactions = new ArrayList<>();
     private int nextId = 1;
 
-
+  
     public void addTransaction(LocalDateTime dateTime, double amount,
      String category, String description){
         Transaction t = new Transaction(nextId++,dateTime,
@@ -23,7 +27,7 @@ public class TransactionController {
     }
 
     public List<Transaction> getAllTransactions(){
-        return transactions;
+        return new ArrayList<>(transactions);
     }
 
 
@@ -34,7 +38,7 @@ public class TransactionController {
 
             if (t.getId() == id ){
                 transactions.remove(i);
-
+                return true;
             }
         }
         return false;
@@ -116,7 +120,7 @@ public class TransactionController {
                 }
             } 
 
-            System.out.println("Loaded transacted from files.");
+            System.out.println("Loaded transactions from files.");
         } catch (IOException e) {
             System.out.println("(Error loading profile.)" + e.getMessage());
         }
@@ -128,12 +132,13 @@ public class TransactionController {
     }
 
 
-    //Filters (In progress)
+    //Filters (done)
 
     public List<Transaction> filterByCategory(String category){
         return transactions.stream()
                 .filter(t -> t.getCategory().equalsIgnoreCase(category))
-                .toList();
+                .collect(Collectors.toList());
+
     }
 
     public List<Transaction> filterByDateRange(LocalDate startD, LocalDate endD){
@@ -141,14 +146,16 @@ public class TransactionController {
                 .filter(t->{
                 LocalDate date = t.getDateTime().toLocalDate();
                 return !date.isBefore(startD) && !date.isAfter(endD);
-        }).toList();
+        }).collect(Collectors.toList());
+
     }
     
     public List<Transaction> sortByDate(boolean ascending){
         return transactions.stream().sorted(ascending
             ? Comparator.comparing(Transaction::getDateTime)
             : Comparator.comparing(Transaction::getDateTime).reversed())
-            .toList();
+            .collect(Collectors.toList());
+
         
                         
     }
@@ -157,7 +164,8 @@ public class TransactionController {
         return transactions.stream().sorted(ascending
             ? Comparator.comparingDouble(Transaction::getAmount)
             : Comparator.comparingDouble(Transaction::getAmount).reversed())
-            .toList();
+            .collect(Collectors.toList());
+
     }
 
     
@@ -166,7 +174,8 @@ public class TransactionController {
         return transactions.stream().filter(t->
             t.getDescription().toLowerCase().contains(kw) || 
             t.getCategory().toLowerCase().contains(kw)
-        ).toList();
+        ).collect(Collectors.toList());
+
         
     }
     

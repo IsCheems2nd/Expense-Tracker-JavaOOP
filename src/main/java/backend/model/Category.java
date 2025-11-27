@@ -1,4 +1,4 @@
-package model;
+package backend.model;
 public class Category {
     private String name;
 
