@@ -1,9 +1,9 @@
 package backend.controller;
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -11,138 +11,144 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import backend.db.Database;
 import backend.model.Transaction;
 
 public class TransactionController {
-    private List<Transaction> transactions = new ArrayList<>();
-    private int nextId = 1;
+    
 
   
     public void addTransaction(LocalDateTime dateTime, double amount,
-     String category, String description){
-        Transaction t = new Transaction(nextId++,dateTime,
-                                    amount,category,description);
-        transactions.add(t);
+        String category, String description) {
 
-    }
+        String sql = "INSERT INTO transactions (datetime, amount, category, description) VALUES (?, ?, ?, ?)";
 
-    public List<Transaction> getAllTransactions(){
-        return new ArrayList<>(transactions);
-    }
+        try (Connection conn = Database.getConnection();
+            PreparedStatement stmt = conn.prepareStatement(sql)) {
 
+            stmt.setString(1, dateTime.toString());
+            stmt.setDouble(2, amount);
+            stmt.setString(3, category);
+            stmt.setString(4, description);
 
-    public boolean deleteTransaction(int id){
-        for (int i = 0; i < transactions.size();i++){
-            
-            Transaction t = transactions.get(i);
+            stmt.executeUpdate();
 
-            if (t.getId() == id ){
-                transactions.remove(i);
-                return true;
-            }
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
-        return false;
     }
 
-    public boolean updateTransaction(int id, double newAmount, String newCategory, String newDescription){
-        
-        Transaction t = findById(id);
 
-        if (t == null){
+    public List<Transaction> getAllTransactions() {
+        List<Transaction> list = new ArrayList<>();
+
+        String sql = "SELECT * FROM transactions ORDER BY datetime DESC";
+
+        try (Connection conn = Database.getConnection();
+            Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery(sql)) {
+
+            while (rs.next()) {
+                Transaction t = new Transaction(
+                    rs.getInt("id"),
+                    LocalDateTime.parse(rs.getString("datetime")),
+                    rs.getDouble("amount"),
+                    rs.getString("category"),
+                    rs.getString("description")
+                );
+
+                list.add(t);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return list;
+    }
+
+
+
+    public boolean deleteTransaction(int id) {
+        String sql = "DELETE FROM transactions WHERE id = ?";
+
+        try (Connection conn = Database.getConnection();
+            PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, id);
+            return stmt.executeUpdate() > 0;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
             return false;
         }
-
-        t.setAmount(newAmount);
-        t.setCategory(newCategory);
-        t.setDescription(newDescription);
-
-        return true;
     }
 
-    public Transaction findById(int id){
-        return transactions.stream()
-                .filter(t->t.getId() == id)
-                .findFirst()
-                .orElse(null);
-    }
 
-    public void saveToFile(String filename){
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(filename))){ 
-            //This does write.close(), helps prevent memory leaks
+    public boolean updateTransaction(int id, double newAmount, String newCategory, String newDescription) {
 
-            for (Transaction t : transactions){
-                String line = t.getId() + "," +
-                              t.getDateTime().toString() + "," +
-                              t.getAmount() + "," +
-                              t.getCategory() + "," +
-                              t.getDescription();
-                
-                writer.write(line);
-                writer.newLine();                            
-            
-            }
+        String sql = "UPDATE transactions SET amount = ?, category = ?, description = ? WHERE id = ?";
 
-            System.out.println("Saved Successfully!");
+        try (Connection conn = Database.getConnection();
+            PreparedStatement stmt = conn.prepareStatement(sql)) {
 
-        } catch(IOException e) {
-            System.err.println("Error saving file" + e.getMessage());
+            stmt.setDouble(1, newAmount);
+            stmt.setString(2, newCategory);
+            stmt.setString(3, newDescription);
+            stmt.setInt(4, id);
+
+            return stmt.executeUpdate() > 0;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
         }
     }
 
 
-    public void loadFromFile(String filename){
-        transactions.clear(); //clear list so it won't duplicate when we reload
+    public Transaction findById(int id) {
+        String sql = "SELECT * FROM transactions WHERE id = ?";
 
+        try (Connection conn = Database.getConnection();
+            PreparedStatement stmt = conn.prepareStatement(sql)) {
 
-        try(BufferedReader reader = new BufferedReader(new FileReader(filename))) {
-            String line;
+            stmt.setInt(1, id);
+            ResultSet rs = stmt.executeQuery();
 
-            while((line = reader.readLine()) != null){ //Read transactions' data
+            if (!rs.next()) return null;
 
-                String[] parts = line.split(","); //Split with comma
+            return new Transaction(
+                rs.getInt("id"),
+                LocalDateTime.parse(rs.getString("datetime")),
+                rs.getDouble("amount"),
+                rs.getString("category"),
+                rs.getString("description")
+            );
 
-                int id = Integer.parseInt(parts[0]); //Extract pieces (divided by comma)
-
-                LocalDateTime dateTime = LocalDateTime.parse(parts[1]); //Extract ISO format instead of custom format for easier processing
-
-                double amount = Double.parseDouble(parts[2]);
-                String category = parts[3];
-                String description = parts[4];
-                
-                Transaction t = new Transaction(id, dateTime, amount, category, description);
-
-
-                transactions.add(t);
-
-                if (id >= nextId){
-                    nextId = id+1;
-
-                }
-            } 
-
-            System.out.println("Loaded transactions from files.");
-        } catch (IOException e) {
-            System.out.println("(Error loading profile.)" + e.getMessage());
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
         }
-
-
-
-
-
     }
+
+
+
+
+
+
 
 
     //Filters (done)
 
     public List<Transaction> filterByCategory(String category){
-        return transactions.stream()
+        return getAllTransactions().stream()
                 .filter(t -> t.getCategory().equalsIgnoreCase(category))
                 .collect(Collectors.toList());
 
     }
 
     public List<Transaction> filterByDateRange(LocalDate startD, LocalDate endD){
-        return transactions.stream()
+        return getAllTransactions().stream()
                 .filter(t->{
                 LocalDate date = t.getDateTime().toLocalDate();
                 return !date.isBefore(startD) && !date.isAfter(endD);
@@ -151,7 +157,7 @@ public class TransactionController {
     }
     
     public List<Transaction> sortByDate(boolean ascending){
-        return transactions.stream().sorted(ascending
+        return getAllTransactions().stream().sorted(ascending
             ? Comparator.comparing(Transaction::getDateTime)
             : Comparator.comparing(Transaction::getDateTime).reversed())
             .collect(Collectors.toList());
@@ -161,7 +167,7 @@ public class TransactionController {
     }
     
     public List<Transaction> sortByAmount(boolean ascending){
-        return transactions.stream().sorted(ascending
+        return getAllTransactions().stream().sorted(ascending
             ? Comparator.comparingDouble(Transaction::getAmount)
             : Comparator.comparingDouble(Transaction::getAmount).reversed())
             .collect(Collectors.toList());
@@ -171,7 +177,7 @@ public class TransactionController {
     
     public List<Transaction> search(String keyword){
         String kw = keyword.toLowerCase();
-        return transactions.stream().filter(t->
+        return getAllTransactions().stream().filter(t->
             t.getDescription().toLowerCase().contains(kw) || 
             t.getCategory().toLowerCase().contains(kw)
         ).collect(Collectors.toList());
