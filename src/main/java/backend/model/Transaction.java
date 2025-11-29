@@ -35,11 +35,11 @@ public class Transaction {
 
 
     public int getId(){
-    return id;
+        return id;
     }
 
     public LocalDateTime getDateTime(){
-    return dateTime;
+        return dateTime;
     }
 
     public LocalDate getDate(){
@@ -47,15 +47,15 @@ public class Transaction {
     }
 
     public double getAmount(){
-    return amount;
+        return amount;
     }
 
     public String getCategory(){
-    return category;
+        return category;
     }
 
     public String getDescription(){
-    return description;
+        return description;
     }
 
 

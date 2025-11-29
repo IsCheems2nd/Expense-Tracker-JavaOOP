@@ -130,13 +130,25 @@ public class TransactionController {
             return null;
         }
     }
+    
+    public double getCurrentBalance() {
+    // SQL uses the SUM aggregate function on the 'amount' column
+        String sql = "SELECT SUM(amount) AS total_balance FROM transactions";
 
+        try (Connection conn = Database.getConnection();
+            Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery(sql)) {
 
+            if (rs.next()) {
+                return rs.getDouble("total_balance"); 
+            }
 
-
-
-
-
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        
+        return 0.0; 
+    }
 
     //Filters (done)
 

@@ -1,15 +1,11 @@
 
 package backend;
-import java.util.InputMismatchException;
-import java.util.Scanner;
-
 import backend.controller.TransactionController;
-import backend.db.Database;
-import backend.ui.TransactionUI;
+import frontend.app.mainFrame.MainFrame;
 
 public class Main {
     public static void main(String[] args) {
-
+    /*
         TransactionController controller = new TransactionController();
         Scanner sc = new Scanner(System.in);
 
@@ -59,8 +55,15 @@ public class Main {
         }
 
         sc.close();
-    }
+    */
+    TransactionController controller = new TransactionController();
 
-    
+        javax.swing.SwingUtilities.invokeLater(() -> {
+            MainFrame frame = new MainFrame(controller);
+            frame.setVisible(true);
+        });
+    }
 }
+
+
 
