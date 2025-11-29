@@ -70,8 +70,10 @@ public class EditButtonPanel extends JPanel {
                 category = category != null ? category : "Other";
                 String description = source.getDescriptionPanel().getDescriptionTextArea().getText();
                 
+                String currencyCode = source.getHistoryCard().getCurrencyCode();
+                
                 TransactionController controller = new TransactionController();
-                boolean success = controller.updateTransaction(transactionId, amount, category, description);
+                boolean success = controller.updateTransaction(transactionId, amount, category, description, currencyCode);
 
                 if (success) {
                     JOptionPane.showMessageDialog(source, "Transaction updated successfully!");

@@ -31,9 +31,11 @@ public class TransactionUI {
         System.out.print("Enter description: ");
         String description = sc.nextLine().trim();
         if(description.isEmpty()) description = "No description";
+        System.out.print("Enter currency: ");
+        String currency = sc.nextLine().trim();
 
         LocalDateTime dateTime = LocalDateTime.now();
-        controller.addTransaction(dateTime, amount, category, description);
+        controller.addTransaction(dateTime, amount, category, description, currency);
 
         System.out.println("Transaction added successfully!!!");
     }
@@ -83,7 +85,10 @@ public class TransactionUI {
         String desc = sc.nextLine();
         if (desc.trim().isEmpty()) desc = t.getDescription();
 
-        controller.updateTransaction(id, amount, category, desc);
+        System.out.print("New currency ["+t.getDescription()+"]: ");
+        String currency = sc.nextLine();
+
+        controller.updateTransaction(id, amount, category, desc, currency);
 
         System.out.println("Transaction updated successfully!");
 

@@ -76,7 +76,7 @@ public class MoneyFlowPanel extends JPanel {
     private double calculateExpenses(List<Transaction> transactions) {
         return transactions.stream()
                 .filter(t -> t.getAmount() < 0)
-                .mapToDouble(Transaction::getAmount)
+                .mapToDouble(t -> controller.getBaseCurrencyAmount(t))
                 .map(Math::abs)
                 .sum();
     }
@@ -84,7 +84,7 @@ public class MoneyFlowPanel extends JPanel {
     private double calculateIncome(List<Transaction> transactions) {
         return transactions.stream()
                 .filter(t -> t.getAmount() > 0)
-                .mapToDouble(Transaction::getAmount)
+                .mapToDouble(t -> controller.getBaseCurrencyAmount(t))
                 .sum();
     }
 

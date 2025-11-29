@@ -22,28 +22,28 @@ import frontend.components.TransactionFlowFilter;
 import frontend.components.UIComponentFactory;
 
 public class AddExpenseFrameButtonPanel extends JPanel {
+
     private final AddExpenseFrame sourceFrame;
     private final TransactionController controller;
-    
-    // References to panel fields
+
     private final JTextField amountEnteringTextField;
     private final JTextArea descriptionTextArea;
     private final JComboBox<String> categoryComboBox;
+    private final JComboBox<String> currencyComboBox;
     private final TransactionTypePanel transactionTypePanel;
-    
-    // Reference to the DatePanel
-    private final DatePanel datePanel; 
+
+    private final DatePanel datePanel;
 
     public AddExpenseFrameButtonPanel(AddExpenseFrame source, TransactionController controller, int width) {
         this.sourceFrame = source;
         this.controller = controller;
-        
-        // --- Get component references from the source frame ---
+
         this.amountEnteringTextField = source.getAmountPanel().getAmountEnteringTextField();
         this.descriptionTextArea = source.getDescriptionPanel().getDescriptionTextArea();
         this.categoryComboBox = source.getCategoryPanel().getCategoryComboBox();
         this.transactionTypePanel = source.getTransactionTypePanel();
         this.datePanel = source.getDatePanel();
+        this.currencyComboBox = sourceFrame.getAmountPanel().getCurrencyComboBox();
 
         setLayout(null);
         addButtons(width);
@@ -74,59 +74,50 @@ public class AddExpenseFrameButtonPanel extends JPanel {
     private ActionListener createGoBackButtonActionListener() {
         return e -> {
             sourceFrame.dispose();
-            new MainFrame(controller).setVisible(true); 
+            new MainFrame(controller).setVisible(true);
         };
     }
 
     private ActionListener createAddTransactionActionListener() {
         return e -> {
-            // --- 1. Validation & Data Filtering ---
+
             String amountText = amountEnteringTextField.getText();
             if (!TransactionFlowFilter.validateAmountEntered(amountText)) {
                 JOptionPane.showMessageDialog(sourceFrame, "Amount entered must be a positive number!");
                 return;
             }
-            BigDecimal amount = TransactionFlowFilter.filterAmountEntered(amountText); 
+            BigDecimal amount = TransactionFlowFilter.filterAmountEntered(amountText);
 
-            // Retrieve date from the new JComboBox setup
-            String dateString = datePanel.getDateText(); // datePanel.getDateText() now returns YYYY-MM-DD from dropdowns.
-            
-            // --- 2. Data Conversion & Type Logic ---
-            
-            // Convert date string (YYYY-MM-DD) to LocalDate
+            String dateString = datePanel.getDateText();
+
             LocalDate date = LocalDate.parse(dateString, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-            // Combine date with midnight time to get LocalDateTime, matching controller requirement
+
             LocalDateTime dateTime = date.atTime(LocalTime.MIDNIGHT);
-            
-            // Convert BigDecimal to double for the controller
+
             double amountValue = amount.doubleValue();
-            
-            // Apply Expense/Income logic: Negate amount if it's an expense
+
             if (ExpenseWrapper.isExpense()) {
                 amountValue = -amountValue;
             }
-            
+
+            String currencyCode = (String) currencyComboBox.getSelectedItem();
+
             String category = (String) categoryComboBox.getSelectedItem();
             category = category != null ? category : "Other";
             String description = descriptionTextArea.getText();
 
-            // --- 3. Persistence (via Controller) ---
-            
-            // Call the controller's addTransaction method.
-            // Note: The controller handles SQLExceptions internally, matching your provided TransactionController.
-            controller.addTransaction(dateTime, amountValue, category, description);
-            
+            controller.addTransaction(dateTime, amountValue, category, description, currencyCode);
+
             clearAllTheFieldsUponAdding();
             JOptionPane.showMessageDialog(sourceFrame, "Transaction added successfully!");
-            
+
         };
     }
 
     private void clearAllTheFieldsUponAdding() {
         amountEnteringTextField.setText("");
         descriptionTextArea.setText("");
-        datePanel.clear(); // Reset date to today using the new clear method
-        // Reset type to expense (default)
-        transactionTypePanel.getExpenseCheckBox().setSelected(true); 
+        datePanel.clear();
+        transactionTypePanel.getExpenseCheckBox().setSelected(true);
     }
 }

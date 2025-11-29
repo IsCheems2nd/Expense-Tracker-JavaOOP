@@ -1,4 +1,5 @@
 package backend.controller;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -8,28 +9,52 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import backend.db.Database;
 import backend.model.Transaction;
 
 public class TransactionController {
-    
 
-  
+    private static final Map<String, Double> EXCHANGE_RATES;
+
+    static {
+        EXCHANGE_RATES = new HashMap<>();
+        EXCHANGE_RATES.put("USD", 1.0);
+        EXCHANGE_RATES.put("EUR", 1.16); //by 29/11
+        EXCHANGE_RATES.put("VND", 0.000038);
+    }
+
+    private double convertToBaseCurrency(double amount, String currencyCode) {
+        Double rate = EXCHANGE_RATES.get(currencyCode);
+        if (rate == null) {
+            System.err.println("Unknown currency code: " + currencyCode + ". Defaulting to 1.0 rate.");
+            return amount;
+        }
+        return amount * rate;
+    }
+
+    public double getBaseCurrencyAmount(Transaction t) {
+        return convertToBaseCurrency(t.getAmount(), t.getCurrencyCode());
+    }
+
     public void addTransaction(LocalDateTime dateTime, double amount,
-        String category, String description) {
+            String category, String description, String currencyCode) {
 
-        String sql = "INSERT INTO transactions (datetime, amount, category, description) VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO transactions (datetime, amount, category, description, currency_code) VALUES (?, ?, ?, ?, ?)";
 
-        try (Connection conn = Database.getConnection();
-            PreparedStatement stmt = conn.prepareStatement(sql)) {
+        try (Connection conn = Database.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setString(1, dateTime.toString());
             stmt.setDouble(2, amount);
             stmt.setString(3, category);
             stmt.setString(4, description);
+            stmt.setString(5, currencyCode);
 
             stmt.executeUpdate();
 
@@ -38,23 +63,21 @@ public class TransactionController {
         }
     }
 
-
     public List<Transaction> getAllTransactions() {
         List<Transaction> list = new ArrayList<>();
 
         String sql = "SELECT * FROM transactions ORDER BY datetime DESC";
 
-        try (Connection conn = Database.getConnection();
-            Statement stmt = conn.createStatement();
-            ResultSet rs = stmt.executeQuery(sql)) {
+        try (Connection conn = Database.getConnection(); Statement stmt = conn.createStatement(); ResultSet rs = stmt.executeQuery(sql)) {
 
             while (rs.next()) {
                 Transaction t = new Transaction(
-                    rs.getInt("id"),
-                    LocalDateTime.parse(rs.getString("datetime")),
-                    rs.getDouble("amount"),
-                    rs.getString("category"),
-                    rs.getString("description")
+                        rs.getInt("id"),
+                        LocalDateTime.parse(rs.getString("datetime")),
+                        rs.getDouble("amount"),
+                        rs.getString("category"),
+                        rs.getString("description"),
+                        rs.getString("currency_code")
                 );
 
                 list.add(t);
@@ -67,13 +90,10 @@ public class TransactionController {
         return list;
     }
 
-
-
     public boolean deleteTransaction(int id) {
         String sql = "DELETE FROM transactions WHERE id = ?";
 
-        try (Connection conn = Database.getConnection();
-            PreparedStatement stmt = conn.prepareStatement(sql)) {
+        try (Connection conn = Database.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setInt(1, id);
             return stmt.executeUpdate() > 0;
@@ -84,45 +104,44 @@ public class TransactionController {
         }
     }
 
+    public boolean updateTransaction(int id, double amount, String category, String description, String currencyCode) {
 
-    public boolean updateTransaction(int id, double newAmount, String newCategory, String newDescription) {
+        // 1. Convert the amount to the base currency (USD) before saving
+        double amountUSD = convertToBaseCurrency(amount, currencyCode);
 
-        String sql = "UPDATE transactions SET amount = ?, category = ?, description = ? WHERE id = ?";
-
-        try (Connection conn = Database.getConnection();
-            PreparedStatement stmt = conn.prepareStatement(sql)) {
-
-            stmt.setDouble(1, newAmount);
-            stmt.setString(2, newCategory);
-            stmt.setString(3, newDescription);
-            stmt.setInt(4, id);
-
+        String sql = "UPDATE transactions SET amount = ?, category = ?, description = ?, currency_code = ? WHERE id = ?";
+        try (Connection conn = Database.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setDouble(1, amountUSD); // <-- Saving CONVERTED USD AMOUNT
+            stmt.setString(2, category);
+            stmt.setString(3, description);
+            stmt.setString(4, currencyCode); // <-- Saving ORIGINAL CURRENCY CODE
+            stmt.setInt(5, id);
             return stmt.executeUpdate() > 0;
-
         } catch (SQLException e) {
             e.printStackTrace();
             return false;
         }
     }
-
 
     public Transaction findById(int id) {
         String sql = "SELECT * FROM transactions WHERE id = ?";
 
-        try (Connection conn = Database.getConnection();
-            PreparedStatement stmt = conn.prepareStatement(sql)) {
+        try (Connection conn = Database.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setInt(1, id);
             ResultSet rs = stmt.executeQuery();
 
-            if (!rs.next()) return null;
+            if (!rs.next()) {
+                return null;
+            }
 
             return new Transaction(
-                rs.getInt("id"),
-                LocalDateTime.parse(rs.getString("datetime")),
-                rs.getDouble("amount"),
-                rs.getString("category"),
-                rs.getString("description")
+                    rs.getInt("id"),
+                    LocalDateTime.parse(rs.getString("datetime")),
+                    rs.getDouble("amount"),
+                    rs.getString("category"),
+                    rs.getString("description"),
+                    rs.getString("currencyCode")
             );
 
         } catch (SQLException e) {
@@ -130,71 +149,69 @@ public class TransactionController {
             return null;
         }
     }
-    
+
     public double getCurrentBalance() {
-    // SQL uses the SUM aggregate function on the 'amount' column
-        String sql = "SELECT SUM(amount) AS total_balance FROM transactions";
+        double total = 0.0;
 
-        try (Connection conn = Database.getConnection();
-            Statement stmt = conn.createStatement();
-            ResultSet rs = stmt.executeQuery(sql)) {
-
-            if (rs.next()) {
-                return rs.getDouble("total_balance"); 
-            }
-
-        } catch (SQLException e) {
-            e.printStackTrace();
+        for (Transaction t : getAllTransactions()) {
+            total += getBaseCurrencyAmount(t);
         }
-        
-        return 0.0; 
+
+        return total;
     }
 
     //Filters (done)
-
-    public List<Transaction> filterByCategory(String category){
+    public List<Transaction> filterByCategory(String category) {
         return getAllTransactions().stream()
                 .filter(t -> t.getCategory().equalsIgnoreCase(category))
                 .collect(Collectors.toList());
 
     }
 
-    public List<Transaction> filterByDateRange(LocalDate startD, LocalDate endD){
+    public List<Transaction> filterByDateRange(LocalDate startD, LocalDate endD) {
         return getAllTransactions().stream()
-                .filter(t->{
-                LocalDate date = t.getDateTime().toLocalDate();
-                return !date.isBefore(startD) && !date.isAfter(endD);
-        }).collect(Collectors.toList());
+                .filter(t -> {
+                    LocalDate date = t.getDateTime().toLocalDate();
+                    return !date.isBefore(startD) && !date.isAfter(endD);
+                }).collect(Collectors.toList());
 
     }
-    
-    public List<Transaction> sortByDate(boolean ascending){
+
+    public List<Transaction> sortByDate(boolean ascending) {
         return getAllTransactions().stream().sorted(ascending
-            ? Comparator.comparing(Transaction::getDateTime)
-            : Comparator.comparing(Transaction::getDateTime).reversed())
-            .collect(Collectors.toList());
+                ? Comparator.comparing(Transaction::getDateTime)
+                : Comparator.comparing(Transaction::getDateTime).reversed())
+                .collect(Collectors.toList());
 
-        
-                        
     }
-    
-    public List<Transaction> sortByAmount(boolean ascending){
+
+    public List<Transaction> sortByAmount(boolean ascending) {
         return getAllTransactions().stream().sorted(ascending
-            ? Comparator.comparingDouble(Transaction::getAmount)
-            : Comparator.comparingDouble(Transaction::getAmount).reversed())
-            .collect(Collectors.toList());
+                ? Comparator.comparingDouble(Transaction::getAmount)
+                : Comparator.comparingDouble(Transaction::getAmount).reversed())
+                .collect(Collectors.toList());
 
     }
 
-    
-    public List<Transaction> search(String keyword){
+    public List<Transaction> search(String keyword) {
         String kw = keyword.toLowerCase();
-        return getAllTransactions().stream().filter(t->
-            t.getDescription().toLowerCase().contains(kw) || 
-            t.getCategory().toLowerCase().contains(kw)
+        return getAllTransactions().stream().filter(t
+                -> t.getDescription().toLowerCase().contains(kw)
+                || t.getCategory().toLowerCase().contains(kw)
         ).collect(Collectors.toList());
 
-        
     }
-    
+
+    public List<Transaction> filterByType(boolean isIncome) {
+        return getAllTransactions().stream()
+                .filter(t -> isIncome ? t.getAmount() > 0 : t.getAmount() < 0)
+                .collect(Collectors.toList());
+    }
+
+    public Set<String> getUniqueCategories() {
+        return getAllTransactions().stream()
+                .map(Transaction::getCategory)
+                .collect(Collectors.toCollection(HashSet::new));
+    }
+
 }

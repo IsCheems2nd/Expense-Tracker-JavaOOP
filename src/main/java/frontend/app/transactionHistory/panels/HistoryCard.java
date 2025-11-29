@@ -1,7 +1,7 @@
 package frontend.app.transactionHistory.panels;
 
 import backend.controller.TransactionController;
-import frontend.components.IconLoader; 
+import frontend.components.IconLoader;
 
 import javax.swing.*;
 import java.awt.*;
@@ -10,28 +10,29 @@ import java.awt.event.ActionListener;
 import java.time.LocalDateTime;
 
 public class HistoryCard extends JPanel {
+
     private HistoryCardsPanel source;
     private int id;
-    private double amount; 
-    private LocalDateTime dateTime; 
+    private double amount;
+    private LocalDateTime dateTime;
     private String category;
     private String description;
+    private String currencyCode;
 
-    public HistoryCard(HistoryCardsPanel source, int id, double amount, LocalDateTime dateTime, String category, String description)
-    {
+    public HistoryCard(HistoryCardsPanel source, int id, double amount, LocalDateTime dateTime, String category, String description, String currencyCode) {
         this.id = id;
         this.source = source;
         this.amount = amount;
         this.dateTime = dateTime;
         this.category = category;
         this.description = description;
+        this.currencyCode = currencyCode;
 
         initializeCardLook();
         addComponents();
     }
 
-    private void initializeCardLook()
-    {
+    private void initializeCardLook() {
         setLayout(new BorderLayout());
         setBorder(BorderFactory.createLineBorder(Color.BLACK, 1));
 
@@ -77,33 +78,31 @@ public class HistoryCard extends JPanel {
         add(contentPanel, BorderLayout.CENTER);
     }
 
-    private JLabel createCategoryLabel()
-    {
+    private JLabel createCategoryLabel() {
         JLabel categoryLabel = new JLabel(category);
         categoryLabel.setFont(new Font("Dialog", Font.BOLD, 20));
         return categoryLabel;
     }
 
-    private JLabel createAmountLabel()
-    {
-        // "Type" logic removed. Displaying raw amount as formatted string.
-        String text = String.format("%.2f", amount);
+    private JLabel createAmountLabel() {
+        Color amountColor = (amount < 0) ? new Color(220, 60, 60) : new Color(60, 180, 60);
+        String text = String.format("%.2f %s", amount, currencyCode);
         JLabel amountLabel = new JLabel(text);
         amountLabel.setFont(new Font("Dialog", Font.PLAIN, 30));
+        amountLabel.setForeground(amountColor);
+
         return amountLabel;
     }
 
-    private JLabel createDateLabel()
-    {
-        // Extract LocalDate from LocalDateTime to maintain original visual format (YYYY-MM-DD)
+    private JLabel createDateLabel() {
+
         String text = dateTime.toLocalDate().toString();
         JLabel dateLabel = new JLabel(text);
         dateLabel.setFont(new Font("Dialog", Font.PLAIN, 20));
         return dateLabel;
     }
 
-    private JTextArea createDescriptionTextArea()
-    {
+    private JTextArea createDescriptionTextArea() {
         JTextArea textArea = new JTextArea(description);
         textArea.setFont(new Font("Dialog", Font.PLAIN, 15));
         textArea.setEditable(false);
@@ -114,11 +113,10 @@ public class HistoryCard extends JPanel {
         return textArea;
     }
 
-    private JPanel createButtonPanel()
-    {
+    private JPanel createButtonPanel() {
         JPanel buttonPanel = new JPanel();
         buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
-        buttonPanel.setPreferredSize( new Dimension(80, 24));
+        buttonPanel.setPreferredSize(new Dimension(80, 24));
 
         buttonPanel.add(createEditButton());
         buttonPanel.add(Box.createRigidArea(new Dimension(10, 0)));
@@ -127,8 +125,7 @@ public class HistoryCard extends JPanel {
         return buttonPanel;
     }
 
-    private JButton createDeleteButton()
-    {
+    private JButton createDeleteButton() {
         String deleteButtonIconPath = "/assets/delete.png";
         JButton button = new JButton(IconLoader.loadIcon(deleteButtonIconPath));
         button.setBorder(BorderFactory.createEmptyBorder());
@@ -141,8 +138,7 @@ public class HistoryCard extends JPanel {
         return button;
     }
 
-    private JButton createEditButton()
-    {
+    private JButton createEditButton() {
         String editButtonIconPath = "/assets/edit.png";
         JButton button = new JButton(IconLoader.loadIcon(editButtonIconPath));
         button.setBorder(BorderFactory.createEmptyBorder());
@@ -155,34 +151,32 @@ public class HistoryCard extends JPanel {
         return button;
     }
 
-    private ActionListener createDeleteButtonActionListener()
-    {
+    private ActionListener createDeleteButtonActionListener() {
         return new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 int result = JOptionPane.showConfirmDialog(source, "Do you really want to delete this card?");
-                switch(result) {
+                switch (result) {
                     case JOptionPane.YES_OPTION -> {
                         TransactionController controller = new TransactionController();
                         boolean success = controller.deleteTransaction(id);
 
-                        if(success) {
+                        if (success) {
                             JOptionPane.showMessageDialog(source, "Card deleted successfully!");
                             source.removeCard(HistoryCard.this);
                         } else {
                             JOptionPane.showMessageDialog(source, "Error occurred while deleting a card!");
                         }
-                     }
+                    }
                     case JOptionPane.NO_OPTION, JOptionPane.CANCEL_OPTION, JOptionPane.CLOSED_OPTION -> {
-                        // do nothing
+
                     }
                 }
             }
         };
     }
 
-    private ActionListener createEditButtonActionListener()
-    {
+    private ActionListener createEditButtonActionListener() {
         return new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -200,8 +194,8 @@ public class HistoryCard extends JPanel {
         return amount;
     }
 
-    public LocalDateTime getDateTime() { 
-        return dateTime; 
+    public LocalDateTime getDateTime() {
+        return dateTime;
     }
 
     public String getCategory() {
@@ -210,5 +204,9 @@ public class HistoryCard extends JPanel {
 
     public String getDescription() {
         return description;
+    }
+
+    public String getCurrencyCode() {
+        return currencyCode;
     }
 }

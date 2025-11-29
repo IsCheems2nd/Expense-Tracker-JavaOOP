@@ -1,6 +1,7 @@
 
 package backend;
 import backend.controller.TransactionController;
+import backend.db.Database;
 import frontend.app.mainFrame.MainFrame;
 
 public class Main {
@@ -56,6 +57,7 @@ public class Main {
 
         sc.close();
     */
+    Database.init();
     TransactionController controller = new TransactionController();
 
         javax.swing.SwingUtilities.invokeLater(() -> {

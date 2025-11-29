@@ -12,10 +12,12 @@ import javax.swing.SwingConstants;
 
 import backend.controller.TransactionController;
 import frontend.app.addFrame.frame.AddExpenseFrame;
+import frontend.app.summaryFrame.frame.SummaryFrame;
 import frontend.app.transactionHistory.frame.TransactionHistoryFrame;
 import frontend.components.UIComponentFactory;
 
 public class MainFrame extends BaseFrame implements ActionListener {
+
     public MainFrame(TransactionController controller) {
         super("Expense Tracker", controller, 600, 800);
     }
@@ -27,7 +29,7 @@ public class MainFrame extends BaseFrame implements ActionListener {
         addBalanceTextField();
         addAddTransactionButton();
         addBrowseHistoryButton();
-        addPeriodicSummary();
+        addViewReportButton();
         addGenerateReportButton();
         addMoneyFlowPanel();
     }
@@ -45,20 +47,19 @@ public class MainFrame extends BaseFrame implements ActionListener {
     }
 
     private void addBalanceTextField() {
-        double totalBalance = calculateBalance(); 
+        double totalBalance = calculateBalance();
         JTextField balanceTextField = UIComponentFactory.createTextField(
-            String.format("$%.2f", totalBalance),
-            20, 410, getWidth() - 50, 40, 28, false
+                String.format("$%.2f", totalBalance),
+                20, 410, getWidth() - 50, 40, 28, false
         );
         balanceTextField.setHorizontalAlignment(SwingConstants.CENTER);
         balanceTextField.setEditable(false);
         add(balanceTextField);
     }
-    
-    private double calculateBalance() {
-        return controller.getCurrentBalance(); 
-    }
 
+    private double calculateBalance() {
+        return controller.getCurrentBalance();
+    }
 
     private void addAddTransactionButton() {
         JButton addBtn = UIComponentFactory.createButton("Add Transaction", 5, 90, getWidth() - 10, 40, 22);
@@ -74,9 +75,9 @@ public class MainFrame extends BaseFrame implements ActionListener {
         add(historyBtn);
     }
 
-    private void addPeriodicSummary() {
-        JButton summaryBtn = UIComponentFactory.createButton("Periodic Summary", 5, 230, getWidth() - 10, 40, 22);
-        summaryBtn.setActionCommand("Periodic Summary");
+    private void addViewReportButton() {
+        JButton summaryBtn = UIComponentFactory.createButton("View Report", 5, 230, getWidth() - 10, 40, 22);
+        summaryBtn.setActionCommand("View Report");
         summaryBtn.addActionListener(this);
         add(summaryBtn);
     }
@@ -97,17 +98,21 @@ public class MainFrame extends BaseFrame implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
         String cmd = e.getActionCommand();
-        
+
         if (cmd.equalsIgnoreCase("Add Transaction")) {
             System.out.println("ACTION: Add Transaction button clicked.");
             dispose();
-            new AddExpenseFrame("Add Transaction", controller, 600, 800).setVisible(true); 
+            new AddExpenseFrame("Add Transaction", controller, 600, 800).setVisible(true);
         } else if (cmd.equalsIgnoreCase("Browse Transactions History")) {
-            System.out.println("ACTION: Browse History button clicked. (Frame not yet implemented)");
+            System.out.println("ACTION: Browse History button clicked.");
             dispose();
-            new TransactionHistoryFrame("Transaction History", controller, 600, 800).setVisible(true); 
+            new TransactionHistoryFrame("Transaction History", controller, 600, 800).setVisible(true);
+        } else if (cmd.equalsIgnoreCase("View Report")) {
+            System.out.println("ACTION: View Report button clicked.");
+            dispose();
+            new SummaryFrame("Summary Report", controller, 800, 700).setVisible(true);
         } else if (cmd.equalsIgnoreCase("Generate Report")) {
-            System.out.println("ACTION: Generate Report button clicked. (Frame not yet implemented)");
+            System.out.println("ACTION: Generate Report button clicked.");
             // dispose();
             // new GenerateReportFrameWindow("Generate Report", controller, 420, 600).setVisible(true); // Comment out or delete
         }

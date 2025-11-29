@@ -10,19 +10,21 @@ public class Transaction {
     private String description;
     private LocalDateTime dateTime;
     private LocalDate date;
+    private String currencyCode;
 
     @Override
     public String toString(){
-        return String.format("ID: %d | %s | %.2f | %s | %s",
+        return String.format("ID: %d | %s | %.2f %s | %s | %s",
                              id,
-                             getFormattedDateTime(),  // formatted date/time
+                             getFormattedDateTime(),  
                              amount,
+                             currencyCode,
                              category,
                              description);
     }
 
     public Transaction(int id, LocalDateTime dateTime,
-     double amount, String category, String description){
+     double amount, String category, String description, String currencyCode){
 
         this.id = id;
         this.amount = amount;
@@ -30,6 +32,7 @@ public class Transaction {
         this.description = description;
         this.dateTime = dateTime;
         this.date = dateTime.toLocalDate();
+        this.currencyCode = currencyCode;
 
     }
 
@@ -60,6 +63,10 @@ public class Transaction {
     }
 
 
+    public String getCurrencyCode(){
+        return currencyCode;
+    }
+
     public String getFormattedDateTime(){
         DateTimeFormatter f = DateTimeFormatter.ofPattern("HH:mm:ss | dd/MM/yyyy");
         
@@ -79,6 +86,10 @@ public class Transaction {
     }
     public void setDescription(String description){
         this.description = description;
+    }
+
+    public void setCurrencyCode(String currencyCode){
+        this.currencyCode = currencyCode;
     }
 }
 

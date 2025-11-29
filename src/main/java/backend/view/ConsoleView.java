@@ -44,7 +44,10 @@ public class ConsoleView {
         System.out.print("Note: ");
         String note = sc.nextLine();
 
-        controller.addTransaction(dateTime, amount, cat, note);
+        System.out.print("Curr: ");
+        String curr = sc.nextLine();
+
+        controller.addTransaction(dateTime, amount, cat, note, curr);
         System.out.println("Added!");
     }
 

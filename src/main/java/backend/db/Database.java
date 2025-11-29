@@ -19,8 +19,8 @@ public class Database {
                     datetime TEXT NOT NULL,
                     amount REAL NOT NULL,
                     category TEXT NOT NULL,
-                    description TEXT
-                    
+                    description TEXT,
+                    currency_code VARCHAR(5) NOT NULL DEFAULT 'USD'
                     );
                 """;
 
@@ -35,11 +35,11 @@ public class Database {
 
     public static void insertSampleData() {
         String sql = """
-            INSERT INTO transactions (datetime, amount, category, description)
+            INSERT INTO transactions (datetime, amount, category, description, currency_code)
             VALUES
-            ('2025-11-27T10:00', 1000, 'Salary', 'Monthly salary'),
-            ('2025-11-28T15:30', 50, 'Food', 'Lunch'),
-            ('2025-11-29T18:00', 200, 'Entertainment', 'Movie ticket');
+            ('2025-11-27T10:00', 1000, 'Salary', 'Monthly salary', 'USD'),
+            ('2025-11-28T15:30', 50, 'Food', 'Lunch', 'USD'),
+            ('2025-11-29T18:00', 200, 'Entertainment', 'Movie ticket', 'USD');
         """;
 
         try (Connection conn = getConnection();
