@@ -1,5 +1,7 @@
 package frontend.app.summaryFrame.panels;
 
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
@@ -34,7 +36,6 @@ public class ChartPanel extends JPanel {
     @Override
     public void setBounds(int x, int y, int width, int height) {
         super.setBounds(x, y, width, height);
-        // Resize chart panel component when this panel is resized
         if (chartPanelComponent != null) {
             chartPanelComponent.setBounds(0, 0, width, height);
         }
@@ -79,6 +80,11 @@ public class ChartPanel extends JPanel {
         
         NumberAxis rangeAxis = (NumberAxis) plot.getRangeAxis();
         rangeAxis.setStandardTickUnits(NumberAxis.createStandardTickUnits());
+        
+        // Format numbers to show full values instead of scientific notation (handles 7-8 digit values)
+        NumberFormat numberFormat = new DecimalFormat("#,###.##");
+        numberFormat.setGroupingUsed(true);
+        rangeAxis.setNumberFormatOverride(numberFormat);
         
         // Remove old chart panel if exists
         if (this.chartPanelComponent != null) {

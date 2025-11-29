@@ -13,6 +13,7 @@ D:\Tech\Year_3_WS\OOP (Java)\project\Expense-Tracker-JavaOOP\src\main\java\backe
 D:\Tech\Year_3_WS\OOP (Java)\project\Expense-Tracker-JavaOOP\src\main\java\frontend\components\UIComponentFactory.java
 D:\Tech\Year_3_WS\OOP (Java)\project\Expense-Tracker-JavaOOP\src\main\java\frontend\app\transactionHistory\panels\HistoryCard.java
 D:\Tech\Year_3_WS\OOP (Java)\project\Expense-Tracker-JavaOOP\src\main\java\frontend\components\ExpenseWrapper.java
+D:\Tech\Year_3_WS\OOP (Java)\project\Expense-Tracker-JavaOOP\src\main\java\backend\fileExporter\PDFExporter.java
 D:\Tech\Year_3_WS\OOP (Java)\project\Expense-Tracker-JavaOOP\src\main\java\frontend\app\addFrame\panels\DescriptionPanel.java
 D:\Tech\Year_3_WS\OOP (Java)\project\Expense-Tracker-JavaOOP\src\main\java\backend\ui\TransactionUI.java
 D:\Tech\Year_3_WS\OOP (Java)\project\Expense-Tracker-JavaOOP\src\main\java\frontend\app\summaryFrame\panels\SummaryFrameButtonPanel.java
@@ -24,6 +25,7 @@ D:\Tech\Year_3_WS\OOP (Java)\project\Expense-Tracker-JavaOOP\src\main\java\front
 D:\Tech\Year_3_WS\OOP (Java)\project\Expense-Tracker-JavaOOP\src\main\java\frontend\app\addFrame\panels\CategoryPanel.java
 D:\Tech\Year_3_WS\OOP (Java)\project\Expense-Tracker-JavaOOP\src\main\java\frontend\app\transactionHistory\panels\EditButtonPanel.java
 D:\Tech\Year_3_WS\OOP (Java)\project\Expense-Tracker-JavaOOP\src\main\java\frontend\components\AmountDocumentFilter.java
+D:\Tech\Year_3_WS\OOP (Java)\project\Expense-Tracker-JavaOOP\src\main\java\frontend\app\exportFrame\DateRangeDialog.java
 D:\Tech\Year_3_WS\OOP (Java)\project\Expense-Tracker-JavaOOP\src\main\java\frontend\app\summaryFrame\frame\SummaryFrame.java
 D:\Tech\Year_3_WS\OOP (Java)\project\Expense-Tracker-JavaOOP\src\main\java\frontend\app\transactionHistory\frame\TransactionHistoryFrame.java
 D:\Tech\Year_3_WS\OOP (Java)\project\Expense-Tracker-JavaOOP\src\main\java\frontend\app\addFrame\panels\AmountPanel.java

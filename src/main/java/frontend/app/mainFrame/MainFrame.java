@@ -3,15 +3,25 @@ package frontend.app.mainFrame;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 import javax.swing.JButton;
+import javax.swing.JFileChooser;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 import backend.controller.TransactionController;
+import backend.fileExporter.PDFExporter;
+import backend.model.Transaction;
 import frontend.app.addFrame.frame.AddExpenseFrame;
+import frontend.app.exportFrame.DateRangeDialog;
 import frontend.app.summaryFrame.frame.SummaryFrame;
 import frontend.app.transactionHistory.frame.TransactionHistoryFrame;
 import frontend.components.UIComponentFactory;
@@ -95,6 +105,78 @@ public class MainFrame extends BaseFrame implements ActionListener {
         add(moneyFlowPanel);
     }
 
+    private void handleGenerateReport() {
+        // Show date range dialog
+        DateRangeDialog dialog = new DateRangeDialog(this);
+        dialog.setVisible(true);
+
+        if (!dialog.isConfirmed()) {
+            return;
+        }
+
+        LocalDate startDate = dialog.getStartDate();
+        LocalDate endDate = dialog.getEndDate();
+
+        // Validate date range
+        if (startDate.isAfter(endDate)) {
+            JOptionPane.showMessageDialog(this,
+                    "Start date must be before or equal to end date.",
+                    "Invalid Date Range",
+                    JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        // Get transactions in date range
+        List<Transaction> transactions = controller.filterByDateRange(startDate, endDate);
+
+        if (transactions.isEmpty()) {
+            JOptionPane.showMessageDialog(this,
+                    "No transactions found in the selected date range.",
+                    "No Data",
+                    JOptionPane.INFORMATION_MESSAGE);
+            return;
+        }
+
+        // Generate default filename from date range
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        String defaultFilename = startDate.format(formatter) + "_to_" + endDate.format(formatter);
+
+        // Show file chooser
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setDialogTitle("Save PDF Report");
+        fileChooser.setSelectedFile(new File(defaultFilename + ".pdf"));
+        fileChooser.setFileFilter(new FileNameExtensionFilter("PDF Files (*.pdf)", "pdf"));
+
+        int userSelection = fileChooser.showSaveDialog(this);
+
+        if (userSelection == JFileChooser.APPROVE_OPTION) {
+            File fileToSave = fileChooser.getSelectedFile();
+            String filePath = fileToSave.getAbsolutePath();
+
+            // Ensure .pdf extension
+            if (!filePath.toLowerCase().endsWith(".pdf")) {
+                filePath += ".pdf";
+            }
+
+            try {
+                // Export PDF
+                PDFExporter exporter = new PDFExporter(filePath, transactions, startDate, endDate, controller);
+                exporter.exportFile();
+
+                JOptionPane.showMessageDialog(this,
+                        "PDF report generated successfully!\nSaved to: " + filePath,
+                        "Success",
+                        JOptionPane.INFORMATION_MESSAGE);
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(this,
+                        "Error generating PDF report: " + e.getMessage(),
+                        "Error",
+                        JOptionPane.ERROR_MESSAGE);
+                e.printStackTrace();
+            }
+        }
+    }
+
     @Override
     public void actionPerformed(ActionEvent e) {
         String cmd = e.getActionCommand();
@@ -113,8 +195,7 @@ public class MainFrame extends BaseFrame implements ActionListener {
             new SummaryFrame("Summary Report", controller, 800, 700).setVisible(true);
         } else if (cmd.equalsIgnoreCase("Generate Report")) {
             System.out.println("ACTION: Generate Report button clicked.");
-            // dispose();
-            // new GenerateReportFrameWindow("Generate Report", controller, 420, 600).setVisible(true); // Comment out or delete
+            handleGenerateReport();
         }
     }
 
