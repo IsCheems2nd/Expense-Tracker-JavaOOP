@@ -64,8 +64,11 @@ public class CategoryPanel extends JPanel {
     private String[] createIncomeCategoriesArray()
     {
         return new String[]{
-                "Salary", "Freelance", "Investments", "Rent Income",
-                "Gifts", "Other"
+                "Salary", 
+                "Investments",
+                "Gifts",
+                "Scholarships",
+                "Other"
         };
     }
 

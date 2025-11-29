@@ -29,6 +29,7 @@ public class Transaction {
         this.category = category;
         this.description = description;
         this.dateTime = dateTime;
+        this.date = dateTime.toLocalDate();
 
     }
 
@@ -68,6 +69,7 @@ public class Transaction {
 
     public void setDateTime(LocalDateTime dateTime){
         this.dateTime = dateTime;
+        this.date = dateTime.toLocalDate();
     }
     public void setAmount(double amount){
         this.amount = amount;

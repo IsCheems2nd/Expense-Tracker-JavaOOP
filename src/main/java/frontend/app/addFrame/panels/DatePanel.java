@@ -174,9 +174,7 @@ public class DatePanel extends JPanel {
     }
     
     public void clear() {
-        setCurrentDate(); // Reset to today's date
+        setCurrentDate();
     }
-    
-    // NOTE: Old text field and checkbox getters (getDateEnteringTextField, getTodayCheckBox, setDateText)
-    // are intentionally removed as the components no longer exist.
+
 }

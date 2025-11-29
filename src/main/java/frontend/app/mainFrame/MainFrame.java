@@ -12,6 +12,7 @@ import javax.swing.SwingConstants;
 
 import backend.controller.TransactionController;
 import frontend.app.addFrame.frame.AddExpenseFrame;
+import frontend.app.transactionHistory.frame.TransactionHistoryFrame;
 import frontend.components.UIComponentFactory;
 
 public class MainFrame extends BaseFrame implements ActionListener {
@@ -29,7 +30,6 @@ public class MainFrame extends BaseFrame implements ActionListener {
         addPeriodicSummary();
         addGenerateReportButton();
         addMoneyFlowPanel();
-        //addRecentTransactionsPanel();
     }
 
     private void addWelcomeLabel() {
@@ -46,8 +46,6 @@ public class MainFrame extends BaseFrame implements ActionListener {
 
     private void addBalanceTextField() {
         double totalBalance = calculateBalance(); 
-        
-        // Adjusted coordinates/size/font to match sample look
         JTextField balanceTextField = UIComponentFactory.createTextField(
             String.format("$%.2f", totalBalance),
             20, 410, getWidth() - 50, 40, 28, false
@@ -95,39 +93,6 @@ public class MainFrame extends BaseFrame implements ActionListener {
         moneyFlowPanel.setBounds(5, 450, getWidth() - 10, 120);
         add(moneyFlowPanel);
     }
-    /*
-    private void addRecentTransactionsPanel() {
-        int contentWidth = Math.min(getWidth() - 10, 500);
-        int labelX = (getWidth() - contentWidth) / 2;
-        JLabel recentLabel = UIComponentFactory.createLabel("Recent Transactions", labelX, 425, contentWidth, 25, 14, SwingConstants.LEFT);
-        add(recentLabel);
-
-        mainTableModel = new TransactionTableModel(controller.getAllTransactions());
-        JTable table = new JTable(mainTableModel);
-        table.setFont(new Font("Dialog", Font.PLAIN, 10));
-        JScrollPane scrollPane = new JScrollPane(table);
-        scrollPane.setBounds(labelX, 450, contentWidth, 100);
-        add(scrollPane);
-    }
-    */
-    /*
-    @Override
-    public void actionPerformed(ActionEvent e) {
-
-        String cmd = e.getActionCommand();
-        if (cmd.equalsIgnoreCase("Add Transaction")) {
-            MainFrame.this.dispose();
-            new AddExpenseFrame("Add Transaction", controller, 420, 600).setVisible(true);
-        } else if (cmd.equalsIgnoreCase("Browse Transactions History")) {
-            MainFrame.this.dispose();
-            new TransactionHistoryFrameWindow("Transaction History", controller, 420, 600).setVisible(true);
-        } else if (cmd.equalsIgnoreCase("Generate Report")) {
-            MainFrame.this.dispose();
-            new GenerateReportFrameWindow("Generate Report", controller, 420, 600).setVisible(true);
-        }
-    }
-    */
-    // Inside frontend.app.mainFrame.MainFrame.java
 
     @Override
     public void actionPerformed(ActionEvent e) {
@@ -139,8 +104,8 @@ public class MainFrame extends BaseFrame implements ActionListener {
             new AddExpenseFrame("Add Transaction", controller, 600, 800).setVisible(true); 
         } else if (cmd.equalsIgnoreCase("Browse Transactions History")) {
             System.out.println("ACTION: Browse History button clicked. (Frame not yet implemented)");
-            // dispose();
-            // new TransactionHistoryFrameWindow("Transaction History", controller, 420, 600).setVisible(true); // Comment out or delete
+            dispose();
+            new TransactionHistoryFrame("Transaction History", controller, 600, 800).setVisible(true); 
         } else if (cmd.equalsIgnoreCase("Generate Report")) {
             System.out.println("ACTION: Generate Report button clicked. (Frame not yet implemented)");
             // dispose();
