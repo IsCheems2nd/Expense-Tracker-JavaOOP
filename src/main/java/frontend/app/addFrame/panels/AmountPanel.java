@@ -31,8 +31,8 @@ public class AmountPanel extends JPanel {
     {
         add(createAmountLabel(width));
         int totalSpace = width - 10;
-        int textFieldWidth = (int) (totalSpace * 0.55); // ~55% width
-        int comboBoxWidth = (int) (totalSpace * 0.35); // ~35% width
+        int textFieldWidth = (int) (totalSpace * 0.55); 
+        int comboBoxWidth = (int) (totalSpace * 0.35); 
         int gap = 10;
         int startX = 5;
         int y = 40;
@@ -65,13 +65,12 @@ public class AmountPanel extends JPanel {
 
     private JComboBox<String> createCurrencyComboBox(int x, int y, int w, int h)
     {
-        // Currencies requested by the user
         String[] currencies = {"USD", "EUR", "VND"}; 
         
         JComboBox<String> comboBox = UIComponentFactory.createStringComboBox(
                 currencies, x, y, w, h, 20
         );
-        comboBox.setSelectedItem("USD"); // Set default currency
+        comboBox.setSelectedItem("USD"); 
         return comboBox;
     }
 

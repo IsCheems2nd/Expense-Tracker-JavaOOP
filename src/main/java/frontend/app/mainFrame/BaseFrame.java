@@ -15,10 +15,6 @@ public abstract class BaseFrame extends JFrame {
         initializeComponents(title, width, height);
         
     }
-
-    public TransactionController getController() { //encapsulation
-        return controller;
-    }
     
     private void initializeComponents(String title, int width, int height) {
         setTitle(title);
@@ -35,5 +31,5 @@ public abstract class BaseFrame extends JFrame {
         return UIComponentFactory.createSeparator(15, 50, getWidth() - 30, 10);
     }
 
-    protected abstract void addGuiComponents();
+    protected abstract void addGuiComponents(); //abstract for other frames to implement
 }

@@ -56,14 +56,12 @@ public class TransactionHistoryFrame extends BaseFrame {
 
     private void arrangePanels()
     {
-        // Adjust layout slightly to make room for potential filters later
         historyCardsScrollPane.setBounds(0, 70, getWidth(), 400);
         transactionHistoryButtonPanel.setBounds(0, 500, getWidth(), 40);
     }
 
     private void addWelcomingComponents()
     {
-        // Placeholder for filters and history label
         add(createSeparator());
         add(createTransactionHistoryLabel());
     }
@@ -74,13 +72,7 @@ public class TransactionHistoryFrame extends BaseFrame {
                 "Transaction History", 0, 0, getWidth() - 10, 50, 30, SwingConstants.CENTER
         );
     }
-    
-    // Getter for the controller
-    public TransactionController getController() {
-        return controller;
-    }
 
-    // Method to call from EditDialog to force the frame and panel to reload data
     public void refreshTransactionFrame() {
         historyCardsPanel.refreshCards();
     }

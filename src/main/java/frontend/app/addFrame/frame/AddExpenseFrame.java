@@ -17,7 +17,6 @@ import frontend.components.UIComponentFactory;
 
 public class AddExpenseFrame extends BaseFrame {
 
-    // --- Panels ---
     private AmountPanel amountPanel;
     private TransactionTypePanel transactionTypePanel;
     private CategoryPanel categoryPanel;
@@ -84,7 +83,6 @@ public class AddExpenseFrame extends BaseFrame {
         return label;
     }
 
-    // --- Accessor Methods (Getters) ---
     public AmountPanel getAmountPanel() {
         return amountPanel;
     }

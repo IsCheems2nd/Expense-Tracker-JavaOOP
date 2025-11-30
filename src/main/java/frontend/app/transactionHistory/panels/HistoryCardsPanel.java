@@ -43,10 +43,6 @@ public class HistoryCardsPanel extends JPanel {
         updatePanel();
     }
 
-    public TransactionController getController() {
-        return controller;
-    }
-
     public TransactionHistoryFrame getSource() {
         return source;
     }
