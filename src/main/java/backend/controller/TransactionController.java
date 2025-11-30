@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
 import backend.db.Database;
 import backend.model.Transaction;
 
-public class TransactionController {
+public class TransactionController extends GenericController<Transaction> {
 
     private static final Map<String, Double> EXCHANGE_RATES;
 
@@ -29,6 +29,55 @@ public class TransactionController {
         EXCHANGE_RATES.put("EUR", 1.16); //by 29/11
         EXCHANGE_RATES.put("VND", 0.000038);
     }
+
+    public TransactionController() {
+        super("transactions");
+    }
+
+    @Override
+    protected Transaction mapResultSetToEntity(ResultSet rs) throws SQLException {
+        return new Transaction(
+            rs.getInt("id"),
+            LocalDateTime.parse(rs.getString("dateTime")),
+            rs.getDouble("amount"),
+            rs.getString("category"),
+            rs.getString("description"),
+            rs.getString("currency_code")
+             );
+    }
+
+    @Override
+    protected String getInsertSQL(){
+        return "INSERT INTO transactions (datetime, amount, category, description, currency_code) VALUES (?, ?, ?, ?, ?)";
+    }
+
+    protected void setInsertParameters(PreparedStatement stmt, Transaction entity) throws SQLException{
+        stmt.setString(1, entity.getDateTime().toString());
+        stmt.setDouble( 2, entity.getAmount());
+        stmt.setString(3, entity.getCategory());
+        stmt.setString(4, entity.getDescription());
+        stmt.setString(5, entity.getCurrencyCode());
+        
+    }
+
+    @Override
+    protected String getUpdateSQL(){
+        return "UPDATE transactions SET amount = ?, categpry = ?, description = ?, currency_code = ? WHERE id = ?"; 
+    }
+
+    @Override
+    protected void setUpdateParameters(PreparedStatement stmt, Transaction entity, int id) throws SQLException{
+        double amountUSE = convertToBaseCurrency(entity.getAmount(), entity.getCurrencyCode());
+        stmt.setDouble(1, amountUSE);
+        stmt.setString(2, entity.getCategory());
+        stmt.setString(3, entity.getDescription());
+        stmt.setString(4, entity.getCurrencyCode());
+        stmt.setInt(5,id);
+
+
+
+    }
+
 
     private double convertToBaseCurrency(double amount, String currencyCode) {
         Double rate = EXCHANGE_RATES.get(currencyCode);
@@ -213,5 +262,6 @@ public class TransactionController {
                 .map(Transaction::getCategory)
                 .collect(Collectors.toCollection(HashSet::new));
     }
+
 
 }

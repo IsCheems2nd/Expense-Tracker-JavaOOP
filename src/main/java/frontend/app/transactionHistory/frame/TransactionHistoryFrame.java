@@ -49,6 +49,8 @@ public class TransactionHistoryFrame extends BaseFrame {
         historyCardsScrollPane = new JScrollPane(historyCardsPanel);
         historyCardsScrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
         historyCardsScrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+        historyCardsScrollPane.getVerticalScrollBar().setUnitIncrement(16);
+        historyCardsScrollPane.getVerticalScrollBar().setBlockIncrement(100);
 
         // Pass the controller
         transactionHistoryButtonPanel = new TransactionHistoryButtonPanel(this, controller, getWidth());
