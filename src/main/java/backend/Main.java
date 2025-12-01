@@ -1,7 +1,7 @@
 
 package backend;
 import backend.controller.TransactionController;
-import backend.db.Database;
+import backend.model.db.Database;
 import frontend.app.mainFrame.MainFrame;
 
 public class Main {
