@@ -8,7 +8,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
-import backend.db.Database;
+import backend.model.db.Database;
 
 
 public abstract class GenericController<T> {

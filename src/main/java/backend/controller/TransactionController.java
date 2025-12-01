@@ -16,7 +16,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import backend.db.Database;
+import backend.model.db.Database;
 import backend.model.Transaction;
 
 public class TransactionController extends GenericController<Transaction> {
