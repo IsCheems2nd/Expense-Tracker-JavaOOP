@@ -186,6 +186,7 @@ public class HistoryCard extends JPanel {
         };
     }
 
+    //getters
     public int getId() {
         return id;
     }

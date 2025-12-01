@@ -84,6 +84,7 @@ public class EditDialog extends JDialog {
         }
     }
 
+    //getters 
     public AmountPanel getAmountPanel() {
         return amountPanel;
     }

@@ -43,6 +43,7 @@ public class HistoryCardsPanel extends JPanel {
         updatePanel();
     }
 
+    //update action methods
     public TransactionHistoryFrame getSource() {
         return source;
     }

@@ -3,8 +3,6 @@ package frontend.app.exportFrame;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.time.LocalDate;
 import java.time.YearMonth;
 import java.util.stream.IntStream;
@@ -17,10 +15,10 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 
-import frontend.app.addFrame.panels.DatePanel;
 import frontend.components.UIComponentFactory;
 
 public class DateRangeDialog extends JDialog {
+
     private JComboBox<Integer> startYearComboBox;
     private JComboBox<Integer> startMonthComboBox;
     private JComboBox<Integer> startDayComboBox;
@@ -35,18 +33,17 @@ public class DateRangeDialog extends JDialog {
         setLocationRelativeTo(parent);
         setLayout(null);
         setResizable(false);
-        
+
         addDateRangeComponents();
     }
 
     private void addDateRangeComponents() {
-        // Start Date Label
+
         JLabel startDateLabel = UIComponentFactory.createLabel(
                 "Start Date (Year - Month - Day)", 20, 20, 200, 30, 16, SwingConstants.LEFT
         );
         add(startDateLabel);
 
-        // Start Date Panel
         JPanel startDatePanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 0));
         startDatePanel.setBounds(20, 50, 450, 40);
 
@@ -64,13 +61,11 @@ public class DateRangeDialog extends JDialog {
 
         add(startDatePanel);
 
-        // End Date Label
         JLabel endDateLabel = UIComponentFactory.createLabel(
                 "End Date (Year - Month - Day)", 20, 110, 200, 30, 16, SwingConstants.LEFT
         );
         add(endDateLabel);
 
-        // End Date Panel
         JPanel endDatePanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 0));
         endDatePanel.setBounds(20, 140, 450, 40);
 
@@ -88,7 +83,6 @@ public class DateRangeDialog extends JDialog {
 
         add(endDatePanel);
 
-        // Buttons
         JButton okButton = UIComponentFactory.createButton("OK", 150, 200, 80, 35, 16);
         okButton.addActionListener(e -> {
             confirmed = true;
@@ -96,7 +90,7 @@ public class DateRangeDialog extends JDialog {
         });
         add(okButton);
 
-        JButton cancelButton = UIComponentFactory.createButton("Cancel", 270, 200, 80, 35, 16);
+        JButton cancelButton = UIComponentFactory.createButton("Cancel", 270, 200, 120, 35, 16);
         cancelButton.addActionListener(e -> {
             confirmed = false;
             dispose();
@@ -145,13 +139,11 @@ public class DateRangeDialog extends JDialog {
         LocalDate today = LocalDate.now();
         LocalDate oneMonthAgo = today.minusMonths(1);
 
-        // Set start date to one month ago
         startYearComboBox.setSelectedItem(oneMonthAgo.getYear());
         startMonthComboBox.setSelectedItem(oneMonthAgo.getMonthValue());
         updateDays(startYearComboBox, startMonthComboBox, startDayComboBox);
         startDayComboBox.setSelectedItem(oneMonthAgo.getDayOfMonth());
 
-        // Set end date to today
         endYearComboBox.setSelectedItem(today.getYear());
         endMonthComboBox.setSelectedItem(today.getMonthValue());
         updateDays(endYearComboBox, endMonthComboBox, endDayComboBox);
@@ -213,4 +205,3 @@ public class DateRangeDialog extends JDialog {
         return confirmed;
     }
 }
-

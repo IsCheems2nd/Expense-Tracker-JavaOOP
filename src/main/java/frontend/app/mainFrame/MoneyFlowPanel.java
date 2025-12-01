@@ -88,6 +88,7 @@ public class MoneyFlowPanel extends JPanel {
                 .sum();
     }
 
+    //display money flow using sign + absolute amount of sum of income/expenses (I had trouble with negative signs handling for calculating expenses so may as well unify both))
     private JLabel createMoneyFlowLabel(double amount, boolean isIncome) {
         String sign = isIncome ? " + " : " - ";
         String text = sign + String.format("$%.2f", Math.abs(amount));

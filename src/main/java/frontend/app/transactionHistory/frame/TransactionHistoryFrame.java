@@ -12,14 +12,15 @@ import frontend.app.transactionHistory.panels.TransactionHistoryButtonPanel;
 import frontend.components.UIComponentFactory;
 
 public class TransactionHistoryFrame extends BaseFrame {
-    private final TransactionController controller; 
-    
+
+    private final TransactionController controller;
+
     private JScrollPane historyCardsScrollPane;
     private HistoryCardsPanel historyCardsPanel;
     private TransactionHistoryButtonPanel transactionHistoryButtonPanel;
 
     public TransactionHistoryFrame(String title, TransactionController controller, int width, int height) {
-        super(title, controller, width, height); 
+        super(title, controller, width, height);
         this.controller = controller;
     }
 
@@ -29,8 +30,7 @@ public class TransactionHistoryFrame extends BaseFrame {
         addPanels();
     }
 
-    private void addPanels()
-    {
+    private void addPanels() {
         initializePanels();
         arrangePanels();
 
@@ -42,9 +42,8 @@ public class TransactionHistoryFrame extends BaseFrame {
         refreshTransactionFrame();
     }
 
-    private void initializePanels()
-    {
-        // Pass the controller
+    private void initializePanels() {
+
         historyCardsPanel = new HistoryCardsPanel(this, controller);
         historyCardsScrollPane = new JScrollPane(historyCardsPanel);
         historyCardsScrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
@@ -52,24 +51,20 @@ public class TransactionHistoryFrame extends BaseFrame {
         historyCardsScrollPane.getVerticalScrollBar().setUnitIncrement(16);
         historyCardsScrollPane.getVerticalScrollBar().setBlockIncrement(100);
 
-        // Pass the controller
         transactionHistoryButtonPanel = new TransactionHistoryButtonPanel(this, controller, getWidth());
     }
 
-    private void arrangePanels()
-    {
+    private void arrangePanels() {
         historyCardsScrollPane.setBounds(0, 70, getWidth(), 400);
         transactionHistoryButtonPanel.setBounds(0, 500, getWidth(), 40);
     }
 
-    private void addWelcomingComponents()
-    {
+    private void addWelcomingComponents() {
         add(createSeparator());
         add(createTransactionHistoryLabel());
     }
 
-    private JLabel createTransactionHistoryLabel()
-    {
+    private JLabel createTransactionHistoryLabel() {
         return UIComponentFactory.createLabel(
                 "Transaction History", 0, 0, getWidth() - 10, 50, 30, SwingConstants.CENTER
         );

@@ -10,6 +10,7 @@ import frontend.app.mainFrame.MainFrame;
 import frontend.app.transactionHistory.frame.TransactionHistoryFrame;
 import frontend.components.UIComponentFactory;
 
+//go back button
 public class TransactionHistoryButtonPanel extends JPanel{
     private final TransactionHistoryFrame source;
     private final TransactionController controller;

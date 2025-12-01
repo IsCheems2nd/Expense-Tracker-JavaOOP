@@ -6,7 +6,7 @@ import frontend.app.mainFrame.MainFrame;
 
 public class Main {
     public static void main(String[] args) {
-    /*
+    /* Deprecated Console UI, please refer to frontend package for GUI implementation
         TransactionController controller = new TransactionController();
         Scanner sc = new Scanner(System.in);
 

@@ -5,7 +5,7 @@ import java.util.Scanner;
 import backend.controller.TransactionController;
 import backend.model.Transaction;
 
-
+//this is deprecated class for console-based interaction with the expense tracker application, refer to Frontend package for GUI-based implementation
 public class ConsoleView {
     private TransactionController controller = new TransactionController();
     private Scanner sc = new Scanner(System.in);

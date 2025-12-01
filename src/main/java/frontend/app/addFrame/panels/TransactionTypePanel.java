@@ -9,13 +9,13 @@ import frontend.components.ExpenseWrapper;
 import frontend.components.UIComponentFactory;
 
 public class TransactionTypePanel extends JPanel {
+
     private JCheckBox expenseCheckBox;
     private JCheckBox incomeCheckBox;
     private CategoryPanel categoryPanel;
     private boolean isExpense;
 
-    public TransactionTypePanel(CategoryPanel categoryPanel, int width)
-    {
+    public TransactionTypePanel(CategoryPanel categoryPanel, int width) {
         this.categoryPanel = categoryPanel;
 
         setLayout(null);
@@ -30,15 +30,13 @@ public class TransactionTypePanel extends JPanel {
         return incomeCheckBox;
     }
 
-    private void addCheckBoxes(int width)
-    {
+    private void addCheckBoxes(int width) {
         createTypeCheckingCheckBoxes(width);
         add(expenseCheckBox);
         add(incomeCheckBox);
     }
 
-    private void createTypeCheckingCheckBoxes(int width)
-    {
+    private void createTypeCheckingCheckBoxes(int width) {
         int checkBoxWidth = 140;
         int gap = 10;
         int offset = 20;
@@ -49,7 +47,7 @@ public class TransactionTypePanel extends JPanel {
         int incomeCheckBoxX = (totalWidth / 2) + gap + offset;
 
         isExpense = true;
-        
+
         ExpenseWrapper.setIsExpense(true);
 
         expenseCheckBox = UIComponentFactory.createCheckBox(
@@ -79,7 +77,7 @@ public class TransactionTypePanel extends JPanel {
     }
 
     public boolean getIsExpense() {
-        return  isExpense;
+        return isExpense;
     }
 
     public void setExpense(boolean expense) {

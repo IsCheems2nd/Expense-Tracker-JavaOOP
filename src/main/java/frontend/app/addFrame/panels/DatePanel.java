@@ -95,9 +95,6 @@ public class DatePanel extends JPanel {
         return comboBox;
     }
 
-    /**
-     * Sets the default selection to the current date.
-     */
     private void setCurrentDate() {
         LocalDate today = LocalDate.now();
         yearComboBox.setSelectedItem(today.getYear());
@@ -106,10 +103,6 @@ public class DatePanel extends JPanel {
         dayComboBox.setSelectedItem(today.getDayOfMonth());
     }
 
-    /**
-     * Updates the days in the dayComboBox based on the selected month and year
-     * to handle months with 28, 29, 30, or 31 days (including leap years).
-     */
     private void updateDays() {
         Integer selectedYear = (Integer) yearComboBox.getSelectedItem();
         Integer selectedMonth = (Integer) monthComboBox.getSelectedItem();
@@ -119,7 +112,7 @@ public class DatePanel extends JPanel {
         }
 
         YearMonth yearMonth = YearMonth.of(selectedYear, selectedMonth);
-        int daysInMonth = yearMonth.lengthOfMonth();
+        int daysInMonth = yearMonth.lengthOfMonth(); //handle leap years and special months
 
         Integer currentDay = (Integer) dayComboBox.getSelectedItem();
 
@@ -137,9 +130,6 @@ public class DatePanel extends JPanel {
         }
     }
 
-    /**
-     * Gets the selected date as a formatted string YYYY-MM-DD.
-     */
     public String getSelectedDateString() {
         Integer year = (Integer) yearComboBox.getSelectedItem();
         Integer month = (Integer) monthComboBox.getSelectedItem();
@@ -152,10 +142,6 @@ public class DatePanel extends JPanel {
         return String.format("%04d-%02d-%02d", year, month, day);
     }
 
-    /**
-     * Used for compatibility with the old interface, delegates to
-     * getSelectedDateString().
-     */
     public String getDateText() {
         return getSelectedDateString();
     }

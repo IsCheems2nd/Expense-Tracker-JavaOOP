@@ -105,8 +105,9 @@ public class MainFrame extends BaseFrame implements ActionListener {
         add(moneyFlowPanel);
     }
 
+    //logic handling for PDF report generation dialog, if confirmed --> proceed formatting and call PDFExporter in backend
     private void handleGenerateReport() {
-        // Show date range dialog
+
         DateRangeDialog dialog = new DateRangeDialog(this);
         dialog.setVisible(true);
 
@@ -117,7 +118,6 @@ public class MainFrame extends BaseFrame implements ActionListener {
         LocalDate startDate = dialog.getStartDate();
         LocalDate endDate = dialog.getEndDate();
 
-        // Validate date range
         if (startDate.isAfter(endDate)) {
             JOptionPane.showMessageDialog(this,
                     "Start date must be before or equal to end date.",
@@ -126,7 +126,6 @@ public class MainFrame extends BaseFrame implements ActionListener {
             return;
         }
 
-        // Get transactions in date range
         List<Transaction> transactions = controller.filterByDateRange(startDate, endDate);
 
         if (transactions.isEmpty()) {
@@ -137,11 +136,9 @@ public class MainFrame extends BaseFrame implements ActionListener {
             return;
         }
 
-        // Generate default filename from date range
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         String defaultFilename = startDate.format(formatter) + "_to_" + endDate.format(formatter);
 
-        // Show file chooser
         JFileChooser fileChooser = new JFileChooser();
         fileChooser.setDialogTitle("Save PDF Report");
         fileChooser.setSelectedFile(new File(defaultFilename + ".pdf"));
@@ -153,13 +150,12 @@ public class MainFrame extends BaseFrame implements ActionListener {
             File fileToSave = fileChooser.getSelectedFile();
             String filePath = fileToSave.getAbsolutePath();
 
-            // Ensure .pdf extension
             if (!filePath.toLowerCase().endsWith(".pdf")) {
                 filePath += ".pdf";
             }
 
             try {
-                // Export PDF
+
                 PDFExporter exporter = new PDFExporter(filePath, transactions, startDate, endDate, controller);
                 exporter.exportFile();
 
@@ -177,6 +173,7 @@ public class MainFrame extends BaseFrame implements ActionListener {
         }
     }
 
+    //event handling for main frame buttons
     @Override
     public void actionPerformed(ActionEvent e) {
         String cmd = e.getActionCommand();

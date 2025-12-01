@@ -50,18 +50,16 @@ public class AddExpenseFrame extends BaseFrame {
     }
 
     private void initializePanels() {
-        // Initialize panels
         amountPanel = new AmountPanel(getWidth());
         categoryPanel = new CategoryPanel(getWidth(), true);
         transactionTypePanel = new TransactionTypePanel(categoryPanel, getWidth());
-        datePanel = new DatePanel(getWidth()); // DatePanel now contains JComboBoxes
+        datePanel = new DatePanel(getWidth());
         descriptionPanel = new DescriptionPanel(getWidth());
 
         buttonPanel = new AddExpenseFrameButtonPanel(this, controller, getWidth());
     }
 
     private void arrangePanels() {
-        // Bounds adjusted based on DatePanel's simplified layout
         amountPanel.setBounds(0, 60, getWidth(), 80);
         transactionTypePanel.setBounds(0, 140, getWidth(), 40);
         categoryPanel.setBounds(0, 180, getWidth(), 80);
