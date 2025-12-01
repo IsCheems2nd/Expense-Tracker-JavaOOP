@@ -1,9 +1,7 @@
 package frontend.app.summaryFrame.panels;
 
 import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
 
-import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -12,11 +10,13 @@ import javax.swing.SwingConstants;
 import frontend.components.UIComponentFactory;
 
 public class FilterPanel extends JPanel {
+
     private JComboBox<String> periodComboBox;
     private JComboBox<String> typeComboBox;
     private FilterChangeListener listener;
 
     public interface FilterChangeListener {
+
         void onFilterChanged(String period, String type);
     }
 
@@ -29,13 +29,11 @@ public class FilterPanel extends JPanel {
     private void addFilterComponents(int width) {
         int labelWidth = (width - 30) / 2;
         int comboWidth = labelWidth;
-        
-        // Period filter (Week/Month)
+
         add(createPeriodLabel(5, 0, labelWidth));
         periodComboBox = createPeriodComboBox(5, 40, comboWidth);
         add(periodComboBox);
 
-        // Type filter (Income/Expense)
         int typeX = labelWidth + 20;
         add(createTypeLabel(typeX, 0, labelWidth));
         typeComboBox = createTypeComboBox(typeX, 40, comboWidth);

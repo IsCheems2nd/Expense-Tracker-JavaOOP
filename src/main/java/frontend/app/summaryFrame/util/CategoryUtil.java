@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
+//map categories name back to expense/income type
 public class CategoryUtil {
     private static final Set<String> EXPENSE_CATEGORIES = new HashSet<>(Arrays.asList(
             "Food and Drinks",
