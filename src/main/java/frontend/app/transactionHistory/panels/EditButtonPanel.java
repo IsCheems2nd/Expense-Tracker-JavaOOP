@@ -48,7 +48,7 @@ public class EditButtonPanel extends JPanel {
 
     private ActionListener createSaveButtonActionListener() {
         return new ActionListener() {
-
+            //editing transaction except for date (since date depends on combo boxes --> tricky to fetch, plus not essential for editing)
             @Override
             public void actionPerformed(ActionEvent e) {
                 int transactionId = source.getHistoryCard().getId();
